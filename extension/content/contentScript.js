@@ -1,4 +1,4 @@
-console.log("✅ Workday AutoFill Extension Loaded");
+console.log(" Workday AutoFill Extension Loaded");
 
 const wait = (ms) => new Promise((res) => setTimeout(res, ms));
 
@@ -132,9 +132,9 @@ async function getMappedValue(fieldLabel) {
         return null;
       }
     };
-    let backendValue = await tryBackend("http://localhost:5000");
+    let backendValue = await tryBackend("https://workday-ai-autoapply-production.up.railway.app");
     if (!backendValue) {
-      backendValue = await tryBackend("https://workday-ai-autoapply-production.up.railway.app");
+      backendValue = await tryBackend("http://localhost:5000");
     }
     if (backendValue) return backendValue;
     const staticValue = getStaticFieldValue(fieldLabel);
@@ -180,13 +180,13 @@ async function autofillForm() {
     try {
       const label = getFieldLabel(field);
       if (!label) {
-        console.log("⏭️ No label found for field:", field);
+        console.log(" No label found for field:", field);
         continue;
       }
-      console.log(`🔍 Mapping: "${label}"`);
+      console.log(` Mapping: "${label}"`);
       const value = await getMappedValue(label);
       if (!value) {
-        console.log(`⏭️ Skipping "${label}"`);
+        console.log(`Skipping "${label}"`);
         continue;
       }
       console.log(` Filling "${label}" => "${value}"`);
@@ -206,7 +206,7 @@ async function autoNextStep() {
     return text.includes("next") || text.includes("continue") || text.includes("save and continue");
   });
   if (!nextButton) return false;
-  console.log("➡️ Clicking Next Button");
+  console.log(" Clicking Next Button");
   nextButton.click();
   return true;
 }
@@ -277,5 +277,4 @@ function createAutofillButton() {
 
 window.addEventListener("load", () => {
   setTimeout(createAutofillButton, 3000);
-});eAutofillButton, 3000);
 });
