@@ -14,8 +14,8 @@ const Sidebar = () => {
   const SidebarContent = ({ isMobile = false }) => (
     <div className={`flex flex-col h-full ${isMobile ? 'p-6' : 'p-8'}`}>
       <div className="flex items-center gap-3 mb-12">
-        <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
-          <span className="text-xl font-bold text-white">W</span>
+        <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-primary/20">
+          <img src="/logo.svg" alt="Workday AI Logo" className="w-full h-full object-cover" />
         </div>
         <h1 className="text-xl font-bold tracking-tight text-white">Workday <span className="text-primary">AI</span></h1>
       </div>
@@ -56,7 +56,9 @@ const Sidebar = () => {
       {/* Mobile Header / Hamburger */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-bg-deep/80 backdrop-blur-xl border-b border-white/5 flex items-center justify-between px-6 z-50">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center font-bold text-sm">W</div>
+          <div className="w-8 h-8 rounded-lg overflow-hidden">
+            <img src="/logo.svg" alt="W" className="w-full h-full object-cover" />
+          </div>
           <span className="font-bold text-sm tracking-tight uppercase">Workday AI</span>
         </div>
         <button 

@@ -1,53 +1,23 @@
 const Resume = require("../models/Resume");
 
 const STATIC_FIELD_MAP = {
-  "how did you hear about us": "LinkedIn",
-  "source": "LinkedIn",
-
-  "first name": "Chandan",
-  "given name": "Chandan",
-
-  "last name": "Kumar",
-  "family name": "Kumar",
-  "surname": "Kumar",
-
+  "how did you hear about us": "LinkedIn", "source": "LinkedIn",
+  "first name": "Chandan", "given name": "Chandan",
+  "last name": "Kumar", "family name": "Kumar", "surname": "Kumar",
   "email": "yourmail@gmail.com",
-
-  "phone": "9876543210",
-  "mobile": "9876543210",
-
-  "city": "Bangalore",
-  "current city": "Bangalore",
-
+  "phone": "9876543210", "mobile": "9876543210",
+  "city": "Bangalore", "current city": "Bangalore",
   "country": "India",
-
   "linkedin": "https://linkedin.com/in/yourprofile",
-
   "github": "https://github.com/yourgithub",
-
   "portfolio": "https://yourportfolio.com",
-
-  "current company": "Self Employed",
-
-  "current employer": "Self Employed",
-
+  "current company": "Self Employed", "current employer": "Self Employed",
   "notice period": "Immediate",
-
   "gender": "Male",
-
-  "work authorization": "Yes",
-
-  "authorized to work": "Yes",
-
-  "require sponsorship": "No",
-
-  "visa sponsorship": "No",
-
+  "work authorization": "Yes", "authorized to work": "Yes",
+  "require sponsorship": "No", "visa sponsorship": "No",
   "experience": "2",
-
-  "current ctc": "600000",
-
-  "expected ctc": "900000",
+  "current ctc": "600000", "expected ctc": "900000",
 };
 
 const findStaticValue = (label) => {

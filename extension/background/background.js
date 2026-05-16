@@ -1,7 +1,3 @@
-chrome.runtime.onInstalled.addListener(
-  () => {
-    console.log(
-      'Workday AI Extension Installed'
-    );
-  }
-);
+chrome.runtime.onInstalled.addListener(() => {
+  console.log('Workday AI Extension Installed');
+});
