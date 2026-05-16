@@ -10,14 +10,10 @@ const morgan = require(
 
 const app = express();
 
-// MIDDLEWARE
 app.use(cors());
-
 app.use(express.json());
-
 app.use(morgan('dev'));
 
-// ROUTES
 app.use(
   '/api/auth',
   require('./routes/authRoutes')
@@ -38,7 +34,6 @@ app.use(
   require('./routes/applicationRoutes')
 );
 
-// ROOT
 app.get('/', (req, res) => {
   res.json({
     message:

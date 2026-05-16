@@ -75,7 +75,6 @@ const mapField = async (req, res) => {
 
     console.log("🔍 Mapping Field:", fieldLabel);
 
-    // 1. FALLBACK TO RESUME DATA FIRST
     const latestResume = await Resume.findOne().sort({
       createdAt: -1,
     });
@@ -84,8 +83,6 @@ const mapField = async (req, res) => {
       const parsed = latestResume.parsedData || {};
       const labelLower = fieldLabel.toLowerCase();
 
-      // SMART LOCAL MAPPING
-      // A. Education Fields
       if (parsed.education && parsed.education.length > 0) {
         const edu = parsed.education[0];
         if (labelLower.includes("school") || labelLower.includes("university") || labelLower.includes("institution")) {
@@ -102,7 +99,6 @@ const mapField = async (req, res) => {
         }
       }
 
-      // B. Experience Fields
       if (parsed.experience && parsed.experience.length > 0) {
         const exp = parsed.experience[0];
         if (labelLower.includes("company") || labelLower.includes("employer")) {
@@ -116,7 +112,6 @@ const mapField = async (req, res) => {
         }
       }
 
-      // C. Simple fields (name, email, phone, location)
       for (const key of Object.keys(parsed)) {
         if (typeof parsed[key] === "string" && labelLower.includes(key.toLowerCase())) {
           return res.status(200).json({
@@ -126,13 +121,11 @@ const mapField = async (req, res) => {
         }
       }
 
-      // D. Skills
       if (labelLower.includes("skill") && Array.isArray(parsed.skills)) {
         return res.status(200).json({ success: true, result: { value: parsed.skills.join(", "), confidence: 0.9 } });
       }
     }
 
-    // 2. STATIC MAPPING AS FALLBACK
     const staticValue = findStaticValue(fieldLabel);
 
     if (staticValue) {
@@ -147,16 +140,16 @@ const mapField = async (req, res) => {
       });
     }
 
-    // 3. FINAL AI FALLBACK (For complex questions like "Why are you a great fit?")
-    console.log("🤖 Local mapping failed. Calling Gemini AI for field:", fieldLabel);
     try {
       const { parseResumeWithGemini } = require("../services/geminiService");
       
+      const resumeContent = latestResume ? latestResume.rawText : "No resume data available. Use general professional knowledge.";
+      
       const aiPrompt = `
-        Resume Content: ${latestResume.rawText}
+        Resume Content: ${resumeContent}
         Field to fill: ${fieldLabel}
         
-        Generate a concise, professional answer for this field based on the resume. 
+        Generate a concise, professional answer for this field based on the resume (if provided). 
         If it's a "Why are you a fit" question, write 2-3 sentences. 
         If it's a salary question, estimate based on experience or return a reasonable number like 80000.
         Return ONLY the value.

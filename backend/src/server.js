@@ -1,13 +1,7 @@
-/**
- * MIT License
- * Created by Chandan Kumar
- * Copyright (c) 2026
- */
 require('dotenv').config();
 const app = require('./app');
 const connectDB = require('./config/db');
 
-// Connect to Database
 connectDB();
 
 const PORT = process.env.PORT || 5000;
