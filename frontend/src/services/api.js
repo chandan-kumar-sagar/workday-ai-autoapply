@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: (import.meta.env.VITE_API_URL || 'https://workday-ai-autoapply-production.up.railway.app/api') + '/',
 });
 
 export default API;
@@ -15,4 +15,4 @@ export const uploadResume =
 
 export const getApplications =
   () =>
-    API.get('/applications');
+    API.get('applications');

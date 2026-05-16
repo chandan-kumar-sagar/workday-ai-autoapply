@@ -16,7 +16,7 @@ const ResumeUpload = ({ onUploadSuccess }) => {
       const formData = new FormData();
       formData.append('resume', file);
 
-      const response = await API.post('/resume/upload', formData, {
+      const response = await API.post('resume/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
