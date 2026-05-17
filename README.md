@@ -2,18 +2,18 @@
 
 An AI-powered Chrome Extension and Full-Stack Application designed to automate the process of filling out job applications on Workday and other recruitment platforms. 
 
-The system uses **Google Gemini AI** for intelligent resume parsing and generates professional, contextual answers for complex application questions.
+The system uses **Groq AI (Llama 3.3 70B)** for intelligent resume parsing and generates professional, contextual answers for complex application questions.
 
 ---
 
 ## 🚀 Key Features
 
 - **One-Click Autofill**: Automatically detects and populates form fields on any job application site.
-- **Intelligent Resume Parsing**: Uses `gemini-2.5-flash` to extract structured data from PDF and DOCX resumes.
+- **Intelligent Resume Parsing**: Uses Groq's high-speed `llama-3.3-70b-versatile` model to extract structured data from PDF and DOCX resumes.
 - **Smart Mapping Architecture**:
   1. **Resume Data First**: Prioritizes your real personal and professional information.
   2. **Static Mapping Fallback**: Handles universal fields like Gender, Work Authorization, and Source.
-  3. **AI Fallback**: Calls Gemini AI to generate creative answers for complex "essay" questions (e.g., "Why are you a fit for this role?").
+  3. **AI Fallback**: Calls Groq AI to generate creative answers for complex "essay" questions (e.g., "Why are you a fit for this role?").
 - **Cost-Efficient**: Optimized to minimize AI API calls by leveraging local matching whenever possible.
 - **Robust Error Handling**: Built-in fallback system ensures the extension works even if API limits are reached.
 
@@ -24,7 +24,7 @@ The system uses **Google Gemini AI** for intelligent resume parsing and generate
 ### Backend
 - **Core**: Node.js, Express.js
 - **Database**: MongoDB (Mongoose ODM)
-- **AI Integration**: Google Generative AI (`@google/generative-ai`)
+- **AI Integration**: Groq Cloud Developer API (`llama-3.3-70b-versatile`)
 - **File Processing**: Multer, PDF-Parse, Mammoth (for DOCX)
 - **Security**: JWT Authentication, BcryptJS
 
@@ -65,7 +65,7 @@ The system uses **Google Gemini AI** for intelligent resume parsing and generate
      ```env
      PORT=5000
      MONGO_URI=your_mongodb_uri
-     GEMINI_API_KEY=your_google_gemini_key
+     GROQ_API_KEY=your_groq_api_key
      JWT_SECRET=your_secret_key
      ```
    - Run `npm install` and `npm run dev`

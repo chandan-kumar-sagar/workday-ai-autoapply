@@ -5,7 +5,7 @@ const parseWithGroq = async (prompt) => {
       throw new Error("GROQ_API_KEY is not defined in environment variables");
     }
 
-    console.log("🚀 Call Groq API with prompt length:", prompt.length);
+    console.log(" Call Groq API with prompt length:", prompt.length);
 
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
@@ -36,10 +36,10 @@ const parseWithGroq = async (prompt) => {
     }
 
     const content = data.choices[0].message.content;
-    console.log("✅ Groq API call successful!");
+    console.log(" Groq API call successful!");
     return content;
   } catch (error) {
-    console.error("❌ Groq Service Error:", error.message);
+    console.error(" Groq Service Error:", error.message);
     throw error;
   }
 };
