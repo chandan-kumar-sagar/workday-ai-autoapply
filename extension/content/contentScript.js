@@ -221,6 +221,68 @@ async function detectActiveBackend() {
   return activeBackendUrl;
 }
 
+function getJobDetails() {
+  let company = "Workday Job";
+  let role = "Software Engineer";
+
+  try {
+    const title = document.title;
+    if (title) {
+      const parts = title.split(" - ");
+      if (parts.length > 1) {
+        role = parts[0].trim();
+        company = parts[1].replace(/careers|jobs|recruitment|portal|workday/gi, "").trim();
+      } else {
+        const partsPipe = title.split(" | ");
+        if (partsPipe.length > 1) {
+          role = partsPipe[0].trim();
+          company = partsPipe[1].replace(/careers|jobs|recruitment|portal|workday/gi, "").trim();
+        }
+      }
+    }
+
+    const h1 = document.querySelector("h1, [data-automation-id='jobTitle'], .job-title");
+    if (h1 && h1.innerText && h1.innerText.trim().length > 1) {
+      role = h1.innerText.trim();
+    }
+
+    const url = window.location.href;
+    const match = url.match(/https?:\/\/([^.]+)\.myworkdayjobs\.com/);
+    if (match && match[1]) {
+      company = match[1].replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+    }
+  } catch (err) {
+    console.warn("Failed to parse job details:", err.message);
+  }
+
+  role = role.replace(/careers|jobs|recruitment|portal|workday/gi, "").trim();
+  company = company.replace(/careers|jobs|recruitment|portal|workday/gi, "").trim();
+
+  return { company, role };
+}
+
+async function reportApplication() {
+  try {
+    const { company, role } = getJobDetails();
+    console.log(`📤 Reporting job application to tracker: ${role} at ${company}...`);
+    const baseUrl = await detectActiveBackend();
+    
+    const response = await fetch(`${baseUrl}/api/applications`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ company, role }),
+    });
+
+    if (response.ok) {
+      console.log("✅ Successfully reported job application to tracker database!");
+    } else {
+      console.error("❌ Failed to report job application to tracker");
+    }
+  } catch (error) {
+    console.error("❌ Error reporting application:", error.message);
+  }
+}
+
 async function getMappedValue(fieldLabel) {
   try {
     const skipWords = ["yes", "no", "agree", "disagree", "male", "female"];
@@ -327,9 +389,17 @@ async function startAutomation() {
   isProcessing = true;
   let step = 0;
   let previousPage = location.href;
+  let reported = false;
   try {
     while (step < MAX_AUTO_STEPS) {
       console.log(`\n── Step ${step + 1} ──`);
+      
+      // Report the application once on the first step of autofill
+      if (!reported) {
+        reported = true;
+        await reportApplication();
+      }
+
       await autofillForm();
       const nextClicked = await autoNextStep();
       if (!nextClicked) {
