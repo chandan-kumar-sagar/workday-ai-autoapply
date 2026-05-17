@@ -3,39 +3,102 @@ console.log(" Workday AutoFill Extension Loaded");
 const wait = (ms) => new Promise((res) => setTimeout(res, ms));
 
 function getFieldLabel(field) {
+  let labelText = null;
+
+  // 1. By ID / label for
   if (field.id) {
     const label = document.querySelector(`label[for="${field.id}"]`);
-    if (label) return label.innerText.replace(/\*/g, "").trim();
+    if (label) labelText = label.innerText;
   }
-  const labelledBy = field.getAttribute("aria-labelledby");
-  if (labelledBy) {
-    const label = document.getElementById(labelledBy);
-    if (label) return label.innerText.replace(/\*/g, "").trim();
+
+  // 2. aria-labelledby
+  if (!labelText) {
+    const labelledBy = field.getAttribute("aria-labelledby");
+    if (labelledBy) {
+      const label = document.getElementById(labelledBy);
+      if (label) labelText = label.innerText;
+    }
   }
-  const ariaLabel = field.getAttribute("aria-label");
-  if (ariaLabel) return ariaLabel.replace(/\*/g, "").trim();
-  const placeholder = field.getAttribute("placeholder");
-  if (placeholder) return placeholder.replace(/\*/g, "").trim();
-  if (field.previousElementSibling && field.previousElementSibling.tagName === "LABEL") {
-    return field.previousElementSibling.innerText.replace(/\*/g, "").trim();
+
+  // 3. aria-label
+  if (!labelText) {
+    labelText = field.getAttribute("aria-label");
   }
-  let parent = field.parentElement;
-  for (let i = 0; i < 4; i++) {
-    if (!parent) break;
-    const label = parent.querySelector("label");
-    if (label) return label.innerText.replace(/\*/g, "").trim();
-    parent = parent.parentElement;
+
+  // 4. placeholder
+  if (!labelText) {
+    labelText = field.getAttribute("placeholder");
   }
-  const workdayContainer = field.closest('[data-automation-id="formField"], [data-automation-id="formField-container"]');
-  if (workdayContainer) {
-    const label = workdayContainer.querySelector('label, [data-automation-id="label"]');
-    if (label) return label.innerText.replace(/\*/g, "").trim();
+
+  // 5. Parent label elements
+  if (!labelText) {
+    let parent = field.parentElement;
+    for (let i = 0; i < 4; i++) {
+      if (!parent) break;
+      const label = parent.querySelector("label");
+      if (label) {
+        labelText = label.innerText;
+        break;
+      }
+      parent = parent.parentElement;
+    }
   }
+
+  // 6. Closest Workday container label
+  if (!labelText) {
+    const workdayContainer = field.closest('[data-automation-id="formField"], [data-automation-id="formField-container"]');
+    if (workdayContainer) {
+      const label = workdayContainer.querySelector('label, [data-automation-id="label"]');
+      if (label) labelText = label.innerText;
+    }
+  }
+
+  // 7. Look at preceding siblings or sibling text containers
+  if (!labelText) {
+    let sibling = field.previousElementSibling;
+    while (sibling) {
+      if (sibling.innerText && sibling.innerText.trim().length > 1) {
+        const text = sibling.innerText.replace(/\*/g, "").trim();
+        if (text && !/^[0-9a-fA-F-]{36}$/.test(text)) {
+          labelText = text;
+          break;
+        }
+      }
+      sibling = sibling.previousElementSibling;
+    }
+  }
+
+  // 8. Look at preceding sibling of the field's parent
+  if (!labelText && field.parentElement) {
+    let pSibling = field.parentElement.previousElementSibling;
+    while (pSibling) {
+      if (pSibling.innerText && pSibling.innerText.trim().length > 1) {
+        const text = pSibling.innerText.replace(/\*/g, "").trim();
+        if (text && !/^[0-9a-fA-F-]{36}$/.test(text)) {
+          labelText = text;
+          break;
+        }
+      }
+      pSibling = pSibling.previousElementSibling;
+    }
+  }
+
+  // Clean label
+  if (labelText) {
+    const cleanLabel = labelText.replace(/\*/g, "").trim();
+    // Verify it is not a random UUID/GUID before returning
+    if (cleanLabel && !/^[0-9a-fA-F-]{36}$/.test(cleanLabel)) {
+      return cleanLabel;
+    }
+  }
+
+  // 9. Last resort: name attribute (if it's not a GUID/random ID)
   const nameAttr = field.getAttribute("name");
-  if (nameAttr) {
+  if (nameAttr && !/^[0-9a-fA-F-]{36}$/.test(nameAttr)) {
     const spaced = nameAttr.replace(/([A-Z])/g, " $1");
     return spaced.replace(/_/g, " ").trim();
   }
+
   return null;
 }
 

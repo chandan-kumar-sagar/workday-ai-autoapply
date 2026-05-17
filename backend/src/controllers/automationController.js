@@ -53,6 +53,19 @@ const mapField = async (req, res) => {
       const parsed = latestResume.parsedData || {};
       const labelLower = fieldLabel.toLowerCase();
 
+      // Heuristic splitting for First and Last Names
+      if (parsed.name) {
+        const nameParts = parsed.name.trim().split(/\s+/);
+        if (labelLower.includes("first name") || labelLower.includes("given name")) {
+          const firstName = nameParts[0] || parsed.name;
+          return res.status(200).json({ success: true, result: { value: firstName, confidence: 0.95 } });
+        }
+        if (labelLower.includes("last name") || labelLower.includes("family name") || labelLower.includes("surname")) {
+          const lastName = nameParts.slice(1).join(" ") || nameParts[0] || parsed.name;
+          return res.status(200).json({ success: true, result: { value: lastName, confidence: 0.95 } });
+        }
+      }
+
       if (parsed.education && parsed.education.length > 0) {
         const edu = parsed.education[0];
         if (labelLower.includes("school") || labelLower.includes("university") || labelLower.includes("institution")) {
@@ -111,7 +124,7 @@ const mapField = async (req, res) => {
     }
 
     try {
-      const { parseResumeWithGemini } = require("../services/geminiService");
+      const { parseWithGroq } = require("../services/groqService");
       
       const resumeContent = latestResume ? latestResume.rawText : "No resume data available. Use general professional knowledge.";
       
@@ -125,7 +138,7 @@ const mapField = async (req, res) => {
         Return ONLY the value.
       `;
       
-      const aiValue = await parseResumeWithGemini(aiPrompt);
+      const aiValue = await parseWithGroq(aiPrompt);
       
       if (aiValue && aiValue.length < 500) {
         return res.status(200).json({

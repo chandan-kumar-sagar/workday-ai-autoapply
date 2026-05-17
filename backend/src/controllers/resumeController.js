@@ -1,7 +1,7 @@
 const fs = require("fs");
 const parsePDF = require("../parsers/pdfParser");
 const Resume = require("../models/Resume");
-const { parseResumeWithGemini } = require("../services/geminiService");
+const { parseWithGroq } = require("../services/groqService");
 const resumePrompt = require("../prompts/resumePrompt");
 const { cleanAIJson } = require("../utils/jsonUtils");
 
@@ -29,17 +29,17 @@ const uploadResume = async (req, res) => {
 
     console.log("PDF TEXT LENGTH:", rawText.length);
 
-    // Call Gemini AI for parsing
-    console.log("Parsing resume with Gemini AI...");
+    // Call Groq AI for parsing
+    console.log("Parsing resume with Groq AI...");
     const prompt = resumePrompt(rawText);
     
     let parsedData = {};
     try {
-      const geminiResponse = await parseResumeWithGemini(prompt);
-      const cleanedJson = cleanAIJson(geminiResponse);
+      const groqResponse = await parseWithGroq(prompt);
+      const cleanedJson = cleanAIJson(groqResponse);
       parsedData = JSON.parse(cleanedJson);
     } catch (err) {
-      console.log("Gemini API failed or returned invalid JSON. Using fallback. Error:", err.message);
+      console.log("Groq API failed or returned invalid JSON. Using fallback. Error:", err.message);
       // Fallback
       parsedData = {
         name: "Chandan Kumar",
