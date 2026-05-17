@@ -130,8 +130,8 @@ async function detectActiveBackend() {
 
   // 2. Otherwise auto-detect which candidate is active
   const candidateUrls = [
-    "http://localhost:5000",
-    "https://workday-ai-autoapply-production.up.railway.app"
+    "https://workday-ai-autoapply.onrender.com",
+    "http://localhost:5000"
   ];
 
   for (const url of candidateUrls) {
@@ -154,7 +154,7 @@ async function detectActiveBackend() {
   }
 
   // Default fallback if no backend is active
-  activeBackendUrl = "http://localhost:5000";
+  activeBackendUrl = "https://workday-ai-autoapply.onrender.com";
   return activeBackendUrl;
 }
 
@@ -294,32 +294,4 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     sendResponse({ status: "started" });
   }
   return true;
-});
-
-function createAutofillButton() {
-  if (document.getElementById("wd-autofill-btn")) return;
-  const button = document.createElement("button");
-  button.id = "wd-autofill-btn";
-  button.innerText = " Auto Fill";
-  Object.assign(button.style, {
-    position: "fixed",
-    bottom: "20px",
-    right: "20px",
-    zIndex: "999999",
-    padding: "12px 20px",
-    background: "linear-gradient(135deg, #00E5FF, #0052D4)",
-    color: "white",
-    border: "none",
-    borderRadius: "10px",
-    fontSize: "15px",
-    fontWeight: "bold",
-    cursor: "pointer",
-    boxShadow: "0 4px 15px rgba(0,0,0,0.4)",
-  });
-  button.addEventListener("click", startAutomation);
-  document.body.appendChild(button);
-}
-
-window.addEventListener("load", () => {
-  setTimeout(createAutofillButton, 3000);
 });

@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Load saved custom backend URL
   const data = await chrome.storage.local.get('customBackendUrl');
-  const activeUrl = data.customBackendUrl || 'http://localhost:5000';
+  const activeUrl = data.customBackendUrl || 'https://workday-ai-autoapply.onrender.com';
   backendInput.value = data.customBackendUrl || '';
 
   // Ping backend to check status
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await chrome.storage.local.set({ customBackendUrl: url });
     
     // Verify connection immediately
-    checkConnection(url || 'http://localhost:5000');
+    checkConnection(url || 'https://workday-ai-autoapply.onrender.com');
   });
 
   // Start autofill triggered from popup button
