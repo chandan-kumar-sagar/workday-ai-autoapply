@@ -111,6 +111,53 @@ function getStaticFieldValue(label) {
   return null;
 }
 
+let activeBackendUrl = null;
+
+async function detectActiveBackend() {
+  if (activeBackendUrl) return activeBackendUrl;
+
+  // 1. Check if user configured a custom backend URL in extension settings
+  try {
+    const data = await chrome.storage.local.get("customBackendUrl");
+    if (data && data.customBackendUrl) {
+      console.log(`🔌 Using custom backend URL from storage: ${data.customBackendUrl}`);
+      activeBackendUrl = data.customBackendUrl;
+      return activeBackendUrl;
+    }
+  } catch (err) {
+    console.warn("Could not read custom backend URL from storage:", err.message);
+  }
+
+  // 2. Otherwise auto-detect which candidate is active
+  const candidateUrls = [
+    "http://localhost:5000",
+    "https://workday-ai-autoapply-production.up.railway.app"
+  ];
+
+  for (const url of candidateUrls) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1200); // 1.2s timeout
+      const response = await fetch(url, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (response.ok) {
+        const data = await response.json();
+        if (data && data.message === "Workday AI Auto Apply API") {
+          console.log(`🔌 Connected to active backend at: ${url}`);
+          activeBackendUrl = url;
+          return url;
+        }
+      }
+    } catch (e) {
+      console.warn(`Backend ping failed for ${url}:`, e.message);
+    }
+  }
+
+  // Default fallback if no backend is active
+  activeBackendUrl = "http://localhost:5000";
+  return activeBackendUrl;
+}
+
 async function getMappedValue(fieldLabel) {
   try {
     const skipWords = ["yes", "no", "agree", "disagree", "male", "female"];
@@ -118,25 +165,23 @@ async function getMappedValue(fieldLabel) {
       console.log(`⏭ Skipping useless field: ${fieldLabel}`);
       return "";
     }
-    const tryBackend = async (baseUrl) => {
-      try {
-        const response = await fetch(`${baseUrl}/api/automation/map-field`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ fieldLabel }),
-        });
-        const data = await response.json();
-        return data?.result?.value;
-      } catch (e) {
-        console.warn(`Backend fetch failed for ${baseUrl}:`, e.message);
-        return null;
+
+    const baseUrl = await detectActiveBackend();
+    try {
+      const response = await fetch(`${baseUrl}/api/automation/map-field`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fieldLabel }),
+      });
+      const data = await response.json();
+      if (data?.result?.value) {
+        return data.result.value;
       }
-    };
-    let backendValue = await tryBackend("https://workday-ai-autoapply-production.up.railway.app");
-    if (!backendValue) {
-      backendValue = await tryBackend("http://localhost:5000");
+    } catch (e) {
+      console.warn(`Active backend fetch failed at ${baseUrl}:`, e.message);
+      activeBackendUrl = null; // Clear cache on error to retry detection next time
     }
-    if (backendValue) return backendValue;
+
     const staticValue = getStaticFieldValue(fieldLabel);
     if (staticValue) return staticValue;
     return "";

@@ -2,15 +2,250 @@
 <html>
 
 <head>
-  <title>Workday AI</title>
+  <meta charset="utf-8">
+  <title>Workday AI Auto Apply</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --bg-glass: rgba(17, 24, 39, 0.7);
+      --border-glass: rgba(255, 255, 255, 0.08);
+      --primary: #00e5ff;
+      --secondary: #0052d4;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --success: #10b981;
+      --error: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      width: 320px;
+      font-family: 'Outfit', sans-serif;
+      background: linear-gradient(135deg, #0f172a, #020617);
+      color: var(--text);
+      padding: 20px;
+      overflow-hidden: scroll;
+    }
+
+    .container {
+      background: var(--bg-glass);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border-glass);
+      padding-bottom: 12px;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: white;
+      box-shadow: 0 0 12px rgba(0, 229, 255, 0.4);
+    }
+
+    .title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      background: linear-gradient(to right, #ffffff, #93c5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .status-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-glass);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .status-label {
+      color: var(--text-muted);
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--error);
+      box-shadow: 0 0 8px var(--error);
+    }
+
+    .status-dot.connected {
+      background-color: var(--success);
+      box-shadow: 0 0 8px var(--success);
+    }
+
+    .status-text {
+      font-size: 12px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .input-container {
+      display: flex;
+      gap: 8px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-glass);
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: white;
+      font-family: inherit;
+      font-size: 13px;
+      transition: all 0.3s ease;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 8px rgba(0, 229, 255, 0.2);
+    }
+
+    .btn {
+      font-family: inherit;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 13px;
+    }
+
+    .btn-save {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      padding: 8px 12px;
+    }
+
+    .btn-save:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-action {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(0, 82, 212, 0.3);
+      margin-top: 8px;
+    }
+
+    .btn-action:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0, 229, 255, 0.4);
+    }
+
+    .btn-action:active {
+      transform: translateY(1px);
+    }
+
+    .info-footer {
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 16px;
+    }
+  </style>
 </head>
 
 <body>
-  <h2>Workday AI Auto Apply</h2>
+  <div class="container">
+    <div class="header">
+      <div class="logo-icon">W</div>
+      <div class="title">Workday AI Auto Fill</div>
+    </div>
 
-  <button id="startBtn">
-    Start Autofill
-  </button>
+    <div class="status-card">
+      <div class="status-row">
+        <span class="status-label">Backend Connection</span>
+        <div class="status-badge">
+          <div id="statusDot" class="status-dot"></div>
+          <span id="statusText" class="status-text">Checking...</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="backendUrlInput">Backend API URL</label>
+      <div class="input-container">
+        <input type="text" id="backendUrlInput" placeholder="http://localhost:5000" />
+        <button id="saveBtn" class="btn btn-save">Save</button>
+      </div>
+    </div>
+
+    <button id="startBtn" class="btn btn-action">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+      </svg>
+      Start Autofill
+    </button>
+
+    <div class="info-footer">
+      Workday AI Extension v1.0.0
+    </div>
+  </div>
 
   <script src="popup.js"></script>
 </body>
